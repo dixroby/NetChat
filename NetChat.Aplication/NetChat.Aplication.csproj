@@ -4,4 +4,9 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NetChat.Domain\NetChat.Domain.csproj" />
+    <ProjectReference Include="..\NetChat.Persistence\NetChat.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>
