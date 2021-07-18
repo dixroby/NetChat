@@ -37,6 +37,18 @@ namespace NetChat.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "NetChat.Api", Version = "v1" });
             });
+            services.AddCors(c=> 
+            {
+                c.AddPolicy("CorsPolicy",
+                  policy =>
+                  {
+                      policy
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .WithOrigins("http://localhost:3000");
+                  }
+                );
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,9 +67,10 @@ namespace NetChat.Api
 
             app.UseAuthorization();
 
+            app.UseCors("CorsPolicy");
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers(); 
             });
         }
     }
