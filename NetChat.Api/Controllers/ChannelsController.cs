@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NetChat.Aplication;
+using NetChat.Domain;
 using NetChat.Persistence;
 using System;
 using System.Collections.Generic;
@@ -13,40 +16,35 @@ namespace NetChat.Api.Controllers
     [Route("api/[controller]")]
     public class ChannelsController : ControllerBase
     {
-        private DataContext _context;
-        private ILogger<ChannelsController> _logger;
-
-        public ChannelsController(DataContext context, ILogger<ChannelsController> logger)
+        private IMediator _mediator;
+        public ChannelsController(IMediator mediator)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _logger = logger ?? throw new ArgumentNullException(nameof(context));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
         }
-
+        
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<List<Channel>>> List()
         {
-            Task<IEnumerable<Domain.Channel>> channelTask = GetChannels();
+            var result = await _mediator.Send(new List.Query());
 
-            _logger.LogInformation("Siguiente la tarea");
-
-            var channels = await channelTask;
-            _logger.LogInformation("Termino la tarea");
-
-            return Ok(channels);
-        }
-        [HttpGet]
-        private async Task<IEnumerable<Domain.Channel>> GetChannels()
-        {
-            var channels = await _context.Channels.ToListAsync();
-            return channels;
+            return result;
         }
 
-        [HttpGet("{id}")]
-        public IActionResult Get(Guid id)
+        [HttpGet("ChannelId")]
+        public async Task<ActionResult<Channel>> Details(Guid ChannelId)
         {
-            var channel = _context.Channels.FirstOrDefault(x => x.ChannelId == id);
-            return Ok(channel);
+            var result = await _mediator.Send(new Details.Query {ChannelId= ChannelId });
+
+            return result;
         }
+
+        [HttpPost]
+        public async Task<Unit> Create([FromBody] Create.Command command)
+        {
+            var result = await _mediator.Send(command);
+            return result;
+        }
+
         //private static readonly string[] Summaries = new[]
         //{
         //    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
