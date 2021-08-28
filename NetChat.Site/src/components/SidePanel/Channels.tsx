@@ -1,9 +1,9 @@
 import Axios from "axios";
-import React, {useEffect, useState } from "react";
-import {Icon, Menu } from "semantic-ui-react";
+import React, { useEffect, useState } from "react";
+import { Icon, Menu } from "semantic-ui-react";
 import { IChannel } from "../../models/channels";
 import ChannelItem from "./ChannelItem";
-import ChannelForm from './ChannelForm';
+import ChannelForm from "./ChannelForm";
 
 const Channels = () => {
   const [myChannel, setMyChannel] = useState<IChannel[]>([]);
@@ -19,7 +19,9 @@ const Channels = () => {
 
   const openModal = () => setModal(true);
   const closeModal = () => setModal(false);
-
+  const handleCreateChannel = (channel: IChannel) => {
+    setMyChannel([...myChannel, channel]);
+  };
   const displayChannels = (channels: IChannel[]) => {
     return (
       channels.length > 0 &&
@@ -39,7 +41,7 @@ const Channels = () => {
         </Menu.Item>
         {displayChannels(myChannel)}
       </Menu.Menu>
-      <ChannelForm modal={modal} closeModal={closeModal}/>
+      <ChannelForm modal={modal} closeModal={closeModal} createChanel = {handleCreateChannel} />
     </React.Fragment>
   );
 };
