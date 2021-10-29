@@ -1,20 +1,18 @@
-import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Icon, Menu } from "semantic-ui-react";
 import { IChannel } from "../../models/channels";
 import ChannelItem from "./ChannelItem";
 import ChannelForm from "./ChannelForm";
+import agent from "./../api/agent";
 
 const Channels = () => {
   const [myChannel, setMyChannel] = useState<IChannel[]>([]);
   const [modal, setModal] = useState(false);
 
   useEffect(() => {
-    Axios.get<IChannel[]>("https://localhost:44302/api/Channels")
-      .then((resp) => {
-        setMyChannel(resp.data);
-      })
-      .catch();
+    agent.Channels.list().then((response) => {
+      setMyChannel(response);
+    });
   }, []);
 
   const openModal = () => setModal(true);
@@ -41,7 +39,11 @@ const Channels = () => {
         </Menu.Item>
         {displayChannels(myChannel)}
       </Menu.Menu>
-      <ChannelForm modal={modal} closeModal={closeModal} createChanel = {handleCreateChannel} />
+      <ChannelForm
+        modal={modal}
+        closeModal={closeModal}
+        createChanel={handleCreateChannel}
+      />
     </React.Fragment>
   );
 };
